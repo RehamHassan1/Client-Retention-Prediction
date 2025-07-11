@@ -55,7 +55,7 @@ st.markdown("""
 def load_models():
     try:
         tfidf_title = joblib.load("artifacts/tfidf_title.pkl")
-        title_vec = tfidf_title.transform([data['job_title']])
+        title_vec = tfidf_title.transform([df['job_title']])
         tfidf_desc = joblib.load("artifacts/tfidf_desc.pkl")
         le_country = joblib.load("artifacts/le_country.pkl")
         le_state = joblib.load("artifacts/le_state.pkl")
