@@ -54,9 +54,8 @@ st.markdown("""
 @st.cache_resource
 def load_models():
     try:
-        tfidf_title = joblib.load("artifacts/tfidf_title.pkl")
-        title_vec = tfidf_title.transform([df['job_title']])
-        tfidf_desc = joblib.load("artifacts/tfidf_desc.pkl")
+        tfidf_title = joblib.load("artifacts/tfidf_title.pkl")  
+        tfidf_desc = joblib.load("artifacts/tfidf_desc.pkl")    
         le_country = joblib.load("artifacts/le_country.pkl")
         le_state = joblib.load("artifacts/le_state.pkl")
         mlb = joblib.load("artifacts/mlb_tags.pkl")
