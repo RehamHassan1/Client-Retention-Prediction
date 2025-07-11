@@ -119,7 +119,9 @@ def preprocess_input(data, tfidf_title, tfidf_desc, le_country, le_state, mlb_ta
     
     try:
         title_vec = tfidf_title.transform([data['job_title']]).toarray().flatten()
+        assert title_vec.shape[0] == tfidf_title.transform(["test"]).shape[1]
         desc_vec = tfidf_desc.transform([data['job_description']]).toarray().flatten()
+        assert desc_vec.shape[0] == tfidf_desc.transform(["test"]).shape[1]
         expected_title_len = tfidf_title.idf_.shape[0]
         if title_vec.shape[0] < expected_title_len:
             padding = np.zeros(expected_title_len - title_vec.shape[0])
