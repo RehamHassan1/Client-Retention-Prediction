@@ -27,6 +27,27 @@ It achieves a **high F1-score of 0.9975** using a `RandomForestClassifier`, maki
   - Recall: 100%
 
 ---
+## 🔍 NLP Features
+
+This project leverages Natural Language Processing (NLP) techniques to extract and utilize insights from the textual data in job listings:
+
+- **TF-IDF Vectorization**  
+  - Applied to job titles and job descriptions  
+  - Captures the importance of words relative to all listings  
+  - Helps the model differentiate between common and domain-specific terms
+
+- **Text Preprocessing**  
+  - Lowercasing
+  - Removal of punctuation and stopwords
+  - Tokenization using NLTK  
+  - Ensures consistent and clean input for vectorization
+
+- **MultiLabel Tag Encoding**  
+  - Job tags are split, cleaned, and encoded using `MultiLabelBinarizer`  
+  - Converts variable-length tag lists into fixed-size feature vectors
+
+These NLP features allow the model to understand the nature and content of job postings, which significantly improves prediction accuracy regarding client retention behavior.
+---
 
 ## 📈 Visual Insights
 
