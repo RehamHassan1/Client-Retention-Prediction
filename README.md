@@ -69,7 +69,7 @@ These NLP features allow the model to understand the nature and content of job p
 
 ---
 
-## 📊 Streamlit Dashboard
+## 📊 Streamlit Dashboard Deployment
 
 Explore the project live and make predictions interactively:
 
