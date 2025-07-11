@@ -1,6 +1,9 @@
 # 📊 Client Retention Prediction Based on Client Behavior
 
-This project uses machine learning to predict whether clients on freelancing platforms are likely to return, based on their behavioral patterns, job posting characteristics, and engagement history.
+## 🧩 Problem Statement
+
+In freelance marketplaces, retaining clients is crucial for sustainable platform growth. This project uses machine learning to predict whether a client is likely to return based on their behavior, job posting characteristics, and engagement history.  
+The solution enables proactive strategies for retention, improving user satisfaction and business performance.
 
 ## 🚀 Overview
 
@@ -27,6 +30,27 @@ It achieves a **high F1-score of 0.9975** using a `RandomForestClassifier`, maki
   - Recall: 100%
 
 ---
+## 🔍 NLP Features
+
+This project leverages Natural Language Processing (NLP) techniques to extract and utilize insights from the textual data in job listings:
+
+- **TF-IDF Vectorization**  
+  - Applied to job titles and job descriptions  
+  - Captures the importance of words relative to all listings  
+  - Helps the model differentiate between common and domain-specific terms
+
+- **Text Preprocessing**  
+  - Lowercasing
+  - Removal of punctuation and stopwords
+  - Tokenization using NLTK  
+  - Ensures consistent and clean input for vectorization
+
+- **MultiLabel Tag Encoding**  
+  - Job tags are split, cleaned, and encoded using `MultiLabelBinarizer`  
+  - Converts variable-length tag lists into fixed-size feature vectors
+
+These NLP features allow the model to understand the nature and content of job postings, which significantly improves prediction accuracy regarding client retention behavior.
+---
 
 ## 📈 Visual Insights
 
@@ -48,7 +72,7 @@ It achieves a **high F1-score of 0.9975** using a `RandomForestClassifier`, maki
 
 ---
 
-## 📊 Streamlit Dashboard
+## 📊 Streamlit Dashboard Deployment
 
 Explore the project live and make predictions interactively:
 
