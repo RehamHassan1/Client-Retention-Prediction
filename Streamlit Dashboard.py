@@ -86,6 +86,25 @@ def get_exchange_rate(from_currency, to_currency='USD'):
         }
         return rates.get(from_currency, 1.0)
 
+def get_feature_dimensions(transformer):
+    """Get the expected feature dimensions from a transformer"""
+    if hasattr(transformer, 'idf_'):
+        # TfidfVectorizer
+        return transformer.idf_.shape[0]
+    elif hasattr(transformer, 'n_features_in_'):
+        # TfidfTransformer or other transformers
+        return transformer.n_features_in_
+    elif hasattr(transformer, 'classes_'):
+        # MultiLabelBinarizer
+        return transformer.classes_.shape[0]
+    else:
+        # Try to determine from a test transform
+        try:
+            test_vec = transformer.transform(["test"]).toarray()
+            return test_vec.shape[1]
+        except:
+            return None
+
 def preprocess_input(data, tfidf_title, tfidf_desc, le_country, le_state, mlb_tags):
     
     if data['currency'] != 'USD':
@@ -118,36 +137,52 @@ def preprocess_input(data, tfidf_title, tfidf_desc, le_country, le_state, mlb_ta
         rate_type_features.append(1 if data['rate_type'] == rate_type else 0)
     
     try:
+        # Transform text features
         title_vec = tfidf_title.transform([data['job_title']]).toarray().flatten()
         desc_vec = tfidf_desc.transform([data['job_description']]).toarray().flatten()
-        expected_title_len = tfidf_title.idf_.shape[0]
-        if title_vec.shape[0] < expected_title_len:
-            padding = np.zeros(expected_title_len - title_vec.shape[0])
-            title_vec = np.concatenate([title_vec, padding])
-        elif title_vec.shape[0] > expected_title_len:
-            title_vec = title_vec[:expected_title_len]
-        expected_desc_len = tfidf_desc.idf_.shape[0]
-        if desc_vec.shape[0] < expected_desc_len:
-            padding = np.zeros(expected_desc_len - desc_vec.shape[0])
-            desc_vec = np.concatenate([desc_vec, padding])
-        elif desc_vec.shape[0] > expected_desc_len:
-            desc_vec = desc_vec[:expected_desc_len]
+        
+        # Get expected dimensions
+        expected_title_len = get_feature_dimensions(tfidf_title)
+        expected_desc_len = get_feature_dimensions(tfidf_desc)
+        
+        # Handle dimension mismatch for title
+        if expected_title_len is not None:
+            if title_vec.shape[0] < expected_title_len:
+                padding = np.zeros(expected_title_len - title_vec.shape[0])
+                title_vec = np.concatenate([title_vec, padding])
+            elif title_vec.shape[0] > expected_title_len:
+                title_vec = title_vec[:expected_title_len]
+        
+        # Handle dimension mismatch for description
+        if expected_desc_len is not None:
+            if desc_vec.shape[0] < expected_desc_len:
+                padding = np.zeros(expected_desc_len - desc_vec.shape[0])
+                desc_vec = np.concatenate([desc_vec, padding])
+            elif desc_vec.shape[0] > expected_desc_len:
+                desc_vec = desc_vec[:expected_desc_len]
+                
     except Exception as e:
         st.error(f"Error processing text features: {e}")
+        st.error(f"Title transformer type: {type(tfidf_title)}")
+        st.error(f"Description transformer type: {type(tfidf_desc)}")
         return None
+    
     try:
         tags_list = [tag.strip().lower() for tag in data['tags'].split(',') if tag.strip()]
         tags_vec = mlb_tags.transform([tags_list]).toarray().flatten()
 
-        expected_tag_len = mlb_tags.classes_.shape[0]
-        if tags_vec.shape[0] < expected_tag_len:
-            padding = np.zeros(expected_tag_len - tags_vec.shape[0])
-            tags_vec = np.concatenate([tags_vec, padding])
-        elif tags_vec.shape[0] > expected_tag_len:
-            tags_vec = tags_vec[:expected_tag_len]
+        expected_tag_len = get_feature_dimensions(mlb_tags)
+        if expected_tag_len is not None:
+            if tags_vec.shape[0] < expected_tag_len:
+                padding = np.zeros(expected_tag_len - tags_vec.shape[0])
+                tags_vec = np.concatenate([tags_vec, padding])
+            elif tags_vec.shape[0] > expected_tag_len:
+                tags_vec = tags_vec[:expected_tag_len]
+                
     except Exception as e:
         st.error(f"Error processing tags: {e}")
         return None
+    
     numerical_features = [
         float(data['review_count']), 
         float(data['avg_rating']), 
@@ -170,7 +205,9 @@ def preprocess_input(data, tfidf_title, tfidf_desc, le_country, le_state, mlb_ta
         return feature_vector.reshape(1, -1)
     except Exception as e:
         st.error(f"Error creating feature vector: {e}")
+        st.error(f"Feature dimensions - Numerical: {len(numerical_features)}, Currency: {len(currency_features)}, Rate: {len(rate_type_features)}, Title: {title_vec.shape[0]}, Desc: {desc_vec.shape[0]}, Tags: {tags_vec.shape[0]}")
         return None
+
 def main():
     st.markdown('<h1 class="main-header">📊 Client Retention Predictor</h1>', unsafe_allow_html=True)
     model, tfidf_title, tfidf_desc, le_country, le_state, mlb_tags = load_models()    
