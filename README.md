@@ -1,6 +1,9 @@
 # 📊 Client Retention Prediction Based on Client Behavior
 
-This project uses machine learning to predict whether clients on freelancing platforms are likely to return, based on their behavioral patterns, job posting characteristics, and engagement history.
+## 🧩 Problem Statement
+
+In freelance marketplaces, retaining clients is crucial for sustainable platform growth. This project uses machine learning to predict whether a client is likely to return based on their behavior, job posting characteristics, and engagement history.  
+The solution enables proactive strategies for retention, improving user satisfaction and business performance.
 
 ## 🚀 Overview
 
